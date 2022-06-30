@@ -1,0 +1,14 @@
+.App {
+    text-align: center;
+}
+
+.metricSelector,
+.monthSelector,
+.stationSelector {
+    padding: 0 0.2em;
+    background: #efefef;
+    border: none;
+    border-radius: 0.2em;
+    font-size: 0.9em;
+    font-weight: inherit;
+}
