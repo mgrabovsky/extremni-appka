@@ -96,6 +96,8 @@ export function MainChart(props: MainChartProps) {
                 // .range(['#dbeff9', '#5dbbc3', '#7d417b'])
                 // .domain([1961, 1991, 2021]),
                 .scaleThreshold<number, string>()
+                // .range(['#ddd', 'tomato'])
+                // .domain([2019]),
                 .range([
                     '#dbeff9',
                     '#b3d8e3',
@@ -106,8 +108,6 @@ export function MainChart(props: MainChartProps) {
                     '#7d417b',
                 ])
                 .domain([1971, 1981, 1991, 2001, 2011, 2021]),
-        // .range(['#ddd', 'tomato'])
-        // .domain([2019]),
         []
     );
 
@@ -125,7 +125,6 @@ export function MainChart(props: MainChartProps) {
 
         xScale.domain([1, maxDay]);
         yScale.domain([minTemp - 2, maxTemp + 2]);
-        // yScale.domain([-20, 40]);
 
         setBars(
             temps.map((d) => {
