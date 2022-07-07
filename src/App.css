@@ -2,9 +2,7 @@
     text-align: center;
 }
 
-.metricSelector,
-.monthSelector,
-.stationSelector {
+.customSelector {
     padding: 0 0.2em;
     background: #efefef;
     border: none;

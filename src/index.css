@@ -1,3 +1,5 @@
+@import-normalize;
+
 body {
     max-width: 80em;
     margin: 2em auto;

@@ -60,7 +60,7 @@ function Legend(props: LegendProps) {
     );
 }
 
-export interface MainChartProps {
+export interface FirstChartProps {
     data: Dataset;
     height: number;
     margin: {
@@ -73,7 +73,7 @@ export interface MainChartProps {
     width: number;
 }
 
-export function MainChart(props: MainChartProps) {
+export function FirstChart(props: FirstChartProps) {
     const { data: temps, height, margin, metricField, width } = props;
     const [bars, setBars] = useState<BarSpec[]>();
     const xAxisEl = useRef<SVGGElement>(null);
@@ -92,9 +92,6 @@ export function MainChart(props: MainChartProps) {
     const colourScale = useMemo(
         () =>
             d3
-                // .scaleLinear<string>()
-                // .range(['#dbeff9', '#5dbbc3', '#7d417b'])
-                // .domain([1961, 1991, 2021]),
                 .scaleThreshold<number, string>()
                 // .range(['#ddd', 'tomato'])
                 // .domain([2019]),

@@ -1,42 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { MainChart } from './charts/MainChart';
+import { FirstChart } from './charts/FirstChart';
+import { SingleDayChart } from './charts/SingleDayChart';
 import { Dataset, datasetSchema } from './Schema';
+import { MonthSelector, MonthSelectorProps } from './MonthSelector';
 import './App.css';
 
 const chartWidth = 800;
 const chartHeight = 700;
 const chartMargins = { top: 20, right: 40, bottom: 20, left: 40 };
-
-interface MonthSelectorProps {
-    month: number;
-    onChange: React.ChangeEventHandler<HTMLSelectElement>;
-}
-
-function MonthSelector(props: MonthSelectorProps) {
-    const { month, onChange } = props;
-    const monthNames = useMemo(
-        () =>
-            Array(12)
-                .fill(null)
-                .map((_nothing, i) =>
-                    new Date(1970, i, 1).toLocaleString(navigator.language, {
-                        month: 'long',
-                    })
-                ),
-        []
-    );
-
-    return (
-        <select className="monthSelector" name="months" onChange={onChange} value={month}>
-            {monthNames.map((name, i) => (
-                <option key={i} value={1 + i}>
-                    {name}
-                </option>
-            ))}
-        </select>
-    );
-}
 
 const METRICS = {
     average: { field: 'avg', plural: 'averages' },
@@ -45,6 +17,8 @@ const METRICS = {
 };
 
 type MetricName = keyof typeof METRICS;
+
+const CHART_IDS = ['first', 'single-day'];
 
 interface MetricSelectorProps {
     metric: MetricName;
@@ -56,8 +30,8 @@ function MetricSelector(props: MetricSelectorProps) {
 
     return (
         <select
-            className="metricSelector"
-            name="metrics"
+            className="customSelector"
+            name="metric"
             onChange={onChange}
             value={metric}
         >
@@ -70,11 +44,36 @@ function MetricSelector(props: MetricSelectorProps) {
     );
 }
 
+interface ChartSelectorProps {
+    chart: string;
+    onChange: React.ChangeEventHandler<HTMLSelectElement>;
+}
+
+function ChartSelector(props: ChartSelectorProps) {
+    const { chart: metric, onChange } = props;
+
+    return (
+        <select
+            className="customSelector"
+            name="chartType"
+            onChange={onChange}
+            value={metric}
+        >
+            {CHART_IDS.map((id) => (
+                <option key={id} value={id}>
+                    {id}
+                </option>
+            ))}
+        </select>
+    );
+}
+
 export function App() {
     const [dataset, setDataset] = useState<Dataset>([]);
     const [filtered, setFiltered] = useState<Dataset>([]);
     const [month, setMonth] = useState(1);
     const [metric, setMetric] = useState<MetricName>('average');
+    const [selectedChart, setChart] = useState<string>('first');
 
     useEffect(() => {
         fetch(`${process.env.PUBLIC_URL}/turany2019.json`)
@@ -101,20 +100,39 @@ export function App() {
             <h1>1961–2019 Temperatures for Brno-Tuřany</h1>
 
             <p>
+                Chart type:{' '}
+                <ChartSelector
+                    chart={selectedChart}
+                    onChange={({ target }) => setChart(target.value)}
+                />
+            </p>
+
+            <p>
                 Showing temperature{' '}
                 <MetricSelector metric={metric} onChange={onMetricChange} /> for{' '}
                 <MonthSelector month={month} onChange={onMonthChange} />
             </p>
 
-            {(dataset && (
-                <MainChart
-                    data={filtered}
-                    height={chartHeight}
-                    metricField={METRICS[metric].field as 'avg' | 'high' | 'low'}
-                    margin={chartMargins}
-                    width={chartWidth}
-                />
-            )) || <p>No data.</p>}
+            {selectedChart === 'first' &&
+                ((dataset && (
+                    <FirstChart
+                        data={filtered}
+                        height={chartHeight}
+                        metricField={METRICS[metric].field as 'avg' | 'high' | 'low'}
+                        margin={chartMargins}
+                        width={chartWidth}
+                    />
+                )) || <p>No data.</p>)}
+            {selectedChart === 'single-day' &&
+                ((dataset && (
+                    <SingleDayChart
+                        data={filtered}
+                        height={chartHeight}
+                        metricField={METRICS[metric].field as 'avg' | 'high' | 'low'}
+                        margin={chartMargins}
+                        width={chartWidth}
+                    />
+                )) || <p>No data.</p>)}
 
             <p>
                 (Weather data from{' '}
