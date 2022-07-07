@@ -1,0 +1,40 @@
+Brno-Tuřany	B2BTUR01
+Cheb	L3CHEB01
+Churáňov	C1CHUR01
+Doksany	U1DOKS01
+Dukovany	B2DUKO01
+Holešov	B1HOLE01
+Jičín	H3JICI01
+Karlovy Vary	L3KVAL01
+Kocelovice	C1KOCE01
+Kopisty	-
+Kostelní Myslová	B2KMYS01
+Košetice	P3KOSE01
+Kuchařovice	B2KUCH01
+Liberec	U2LIBC01
+Luká	O2LUKA01
+Lysá hora	O1LYSA01
+Maruška	O3MARU01
+Milešovka	-
+Náměšť nad Oslavou	B2NAMO01
+Ostrava-Mošnov	O1MOSN01
+Pardubice	-
+Pec pod Sněžkou	H1PECS01
+Plzeň-Mikulka	L1PLMI01
+Polom	-
+Praha-Karlov	P1PKAR01
+Praha-Kbely	-
+Praha-Libuš	P1PLIB01
+Praha-Ruzyně	P1PRUZ01
+Prostějov	-
+Přibyslav	P3PRIB01
+Přimda	L2PRIM01
+Svratouch	H3SVRA01
+Temelín	C1TEME01
+Tušimice	U1KATU01
+Ústí nad Labem	U1ULKO01
+Ústí nad Orlicí	H2USTI01
+Červená u Libavé	-
+České Budějovice	C2CBUD01
+Čáslav	H3CASL01
+Šerák	O1SERA01
