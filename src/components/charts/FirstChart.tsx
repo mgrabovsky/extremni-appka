@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as d3 from 'd3';
 
-import { Dataset, Day, DayExtended } from '../../Schema';
+import { DayExtended } from '../../Schema';
 
 interface BarSpec {
     fill: string;

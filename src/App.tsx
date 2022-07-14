@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { FirstChart } from './components/charts/FirstChart';
 import { SingleDayChart } from './components/charts/SingleDayChart';
-import { Dataset, Day, datasetSchema, DayExtended } from './Schema';
+import { Dataset, datasetSchema, DayExtended } from './Schema';
 import { MonthSelector, MonthSelectorProps } from './components/MonthSelector';
 import { StationList, StationSelector } from './components/StationSelector';
 import './App.css';
