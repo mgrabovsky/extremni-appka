@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 
-import { FirstChart } from './charts/FirstChart';
-import { SingleDayChart } from './charts/SingleDayChart';
-import { Dataset, datasetSchema } from './Schema';
-import { MonthSelector, MonthSelectorProps } from './MonthSelector';
+import { FirstChart } from './components/charts/FirstChart';
+import { SingleDayChart } from './components/charts/SingleDayChart';
+import { Dataset, Day, datasetSchema, DayExtended } from './Schema';
+import { MonthSelector, MonthSelectorProps } from './components/MonthSelector';
+import { StationList, StationSelector } from './components/StationSelector';
 import './App.css';
 
 const chartWidth = 800;
@@ -69,23 +70,33 @@ function ChartSelector(props: ChartSelectorProps) {
 }
 
 export function App() {
-    const [dataset, setDataset] = useState<Dataset>([]);
-    const [filtered, setFiltered] = useState<Dataset>([]);
+    const [dataset, setDataset] = useState<Dataset>({});
+    const [filtered, setFiltered] = useState<DayExtended[]>([]);
     const [month, setMonth] = useState(1);
     const [metric, setMetric] = useState<MetricName>('average');
     const [selectedChart, setChart] = useState<string>('first');
+    const [allStations, setAllStations] = useState<StationList>();
+    const [selectedStation, setStation] = useState<string>('B2BTUR01');
 
     useEffect(() => {
-        fetch(`${process.env.PUBLIC_URL}/turany2019.json`)
+        fetch(`${process.env.PUBLIC_URL}/dataset.json`)
             .then((response) => response.json())
             .then(datasetSchema.parseAsync)
-            .then(setDataset);
+            .then((dataset) => {
+                setDataset(dataset);
+                setAllStations(
+                    Object.entries(dataset).map(([stationId, { name }]) => ({
+                        id: stationId,
+                        name,
+                    }))
+                );
+            });
     }, []);
 
     useEffect(() => {
-        if (!dataset.length) return;
-        setFiltered(dataset.filter((d) => d.month === month));
-    }, [dataset, month]);
+        if (!Object.keys(dataset).length || !selectedStation) return;
+        setFiltered(dataset[selectedStation].temps.filter((d) => d.month === month));
+    }, [dataset, month, selectedStation]);
 
     const onMonthChange: MonthSelectorProps['onChange'] = (event) => {
         setMonth(Number(event.target.value));
@@ -97,7 +108,14 @@ export function App() {
 
     return (
         <div className="App">
-            <h1>1961–2019 Temperatures for Brno-Tuřany</h1>
+            <h1>
+                1961–2019 Temperatures for{' '}
+                <StationSelector
+                    allStations={allStations}
+                    onChange={({ target }) => setStation(target.value)}
+                    station={selectedStation}
+                />
+            </h1>
 
             <p>
                 Chart type:{' '}

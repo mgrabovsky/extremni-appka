@@ -16,17 +16,15 @@ export const daySchema = z.object({
 
 export type Day = z.infer<typeof daySchema>;
 
-export const datasetSchema = z.array(daySchema);
+export type DayExtended = Day; // & { day: number; month: number; year: number };
 
-/*
 export const stationSchema = z.object({
-  name: z.string().min(1),
-  temps: z.array(daySchema).nonempty(),
+    name: z.string().min(1),
+    temps: z.array(daySchema).nonempty(),
 });
 
 export type Station = z.infer<typeof stationSchema>;
 
 export const datasetSchema = z.record(stationSchema);
-*/
 
 export type Dataset = z.infer<typeof datasetSchema>;
