@@ -11,13 +11,14 @@ const chartWidth = 800;
 const chartHeight = 700;
 const chartMargins = { top: 20, right: 40, bottom: 20, left: 40 };
 
-const METRICS = {
+type MetricName = 'average' | 'maximum' | 'minimum';
+type MetricDesc = { field: 'avg' | 'high' | 'low'; plural: string };
+
+const METRICS: Record<MetricName, MetricDesc> = {
     average: { field: 'avg', plural: 'averages' },
     maximum: { field: 'high', plural: 'maxima' },
     minimum: { field: 'low', plural: 'minima' },
 };
-
-type MetricName = keyof typeof METRICS;
 
 const CHART_IDS = ['first', 'single-day'];
 
@@ -109,7 +110,7 @@ export function App() {
     return (
         <div className="App">
             <h1>
-                1961–2019 Temperatures for{' '}
+                1961–2021 Temperatures for{' '}
                 <StationSelector
                     allStations={allStations}
                     onChange={({ target }) => setStation(target.value)}
@@ -136,8 +137,8 @@ export function App() {
                     <FirstChart
                         data={filtered}
                         height={chartHeight}
-                        metricField={METRICS[metric].field as 'avg' | 'high' | 'low'}
                         margin={chartMargins}
+                        metricField={METRICS[metric].field}
                         width={chartWidth}
                     />
                 )) || <p>No data.</p>)}
@@ -146,8 +147,8 @@ export function App() {
                     <SingleDayChart
                         data={filtered}
                         height={chartHeight}
-                        metricField={METRICS[metric].field as 'avg' | 'high' | 'low'}
                         margin={chartMargins}
+                        metricField={METRICS[metric].field}
                         width={chartWidth}
                     />
                 )) || <p>No data.</p>)}
