@@ -11,14 +11,13 @@ const chartWidth = 800;
 const chartHeight = 700;
 const chartMargins = { top: 20, right: 40, bottom: 20, left: 40 };
 
-type MetricName = 'average' | 'maximum' | 'minimum';
-type MetricDesc = { field: 'avg' | 'high' | 'low'; plural: string };
-
-const METRICS: Record<MetricName, MetricDesc> = {
-    average: { field: 'avg', plural: 'averages' },
-    maximum: { field: 'high', plural: 'maxima' },
-    minimum: { field: 'low', plural: 'minima' },
+const METRICS = {
+    average: { field: 'avg' as const, plural: 'averages' },
+    maximum: { field: 'high' as const, plural: 'maxima' },
+    minimum: { field: 'low' as const, plural: 'minima' },
 };
+
+type MetricName = keyof typeof METRICS;
 
 const CHART_IDS = ['first', 'single-day'];
 
