@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/extremni-appka/static/css/main.5a2c36cf.css",
+    "main.js": "/extremni-appka/static/js/main.f016b4d7.js",
+    "static/js/787.fdbc6025.chunk.js": "/extremni-appka/static/js/787.fdbc6025.chunk.js",
+    "index.html": "/extremni-appka/index.html",
+    "main.5a2c36cf.css.map": "/extremni-appka/static/css/main.5a2c36cf.css.map",
+    "main.f016b4d7.js.map": "/extremni-appka/static/js/main.f016b4d7.js.map",
+    "787.fdbc6025.chunk.js.map": "/extremni-appka/static/js/787.fdbc6025.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5a2c36cf.css",
+    "static/js/main.f016b4d7.js"
+  ]
+}
