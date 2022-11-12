@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import * as d3 from 'd3';
 
 import { DayExtended } from '../../Schema';
@@ -29,6 +29,7 @@ function Legend(props: LegendProps) {
                 .rangeRound([0, width]),
         [scale, width]
     );
+
     useEffect(() => {
         if (!axisElement.current) return;
         const thresholds = scale.domain();
@@ -50,6 +51,7 @@ function Legend(props: LegendProps) {
             )
             .call((g) => g.select('.domain').remove());
     }, [height, scale, width, x]);
+
     return (
         <g>
             {scale.range().map((fill, i) => (
@@ -81,7 +83,6 @@ export interface FirstChartProps {
 
 export function FirstChart(props: FirstChartProps) {
     const { data: temps, height, margin, metricField, width } = props;
-    const [bars, setBars] = useState<BarSpec[]>();
     const xAxisEl = useRef<SVGGElement>(null);
     const yAxisEl = useRef<SVGGElement>(null);
 
@@ -114,9 +115,7 @@ export function FirstChart(props: FirstChartProps) {
         []
     );
 
-    useEffect(() => {
-        if (!temps) return;
-
+    if (temps) {
         // The result of `d3.extent()` will always be total because `temps` is required
         // to be nonempty. Ditto for `d3.max()` and `d3.min()` below.
         // const timeDomain = d3.extent(temps, (d) => d.date) as [Date, Date];
@@ -128,25 +127,28 @@ export function FirstChart(props: FirstChartProps) {
 
         xScale.domain([1, maxDay]);
         yScale.domain([minTemp - 2, maxTemp + 2]);
+    }
 
-        setBars(
-            temps.map((d) => {
-                // const fill = 'rgba(0,0,0,.2)';
-                const fill = colourScale(d.year);
-                const title = `${d.date.toLocaleDateString()}: ${d[metricField]} °C`;
-                const x = xScale(d.day - 0.5);
-                const y = yScale(d[metricField]);
-                return {
-                    fill,
-                    height: 3,
-                    title,
-                    x,
-                    y,
-                    width: 20,
-                };
-            })
-        );
+    const bars: BarSpec[] | undefined = useMemo(() => {
+        if (!temps) return;
+        return temps.map((d) => {
+            // const fill = 'rgba(0,0,0,.2)';
+            const fill = colourScale(d.year);
+            const title = `${d.date.toLocaleDateString()}: ${d[metricField]} °C`;
+            const x = xScale(d.day - 0.5);
+            const y = yScale(d[metricField]);
+            return {
+                fill,
+                height: 3,
+                title,
+                x,
+                y,
+                width: 20,
+            };
+        })
+    }, [colourScale, metricField, temps, xScale, yScale]);
 
+    useEffect(() => {
         if (xAxisEl.current) d3.select(xAxisEl.current).call(xAxis);
         if (yAxisEl.current) d3.select(yAxisEl.current).call(yAxis);
     }, [colourScale, metricField, temps, xAxis, xScale, yAxis, yScale]);

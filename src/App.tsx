@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { FirstChart } from './components/charts/FirstChart';
 import { SingleDayChart } from './components/charts/SingleDayChart';
@@ -71,7 +71,6 @@ function ChartSelector(props: ChartSelectorProps) {
 
 export function App() {
     const [dataset, setDataset] = useState<Dataset>({});
-    const [filtered, setFiltered] = useState<DayExtended[]>([]);
     const [month, setMonth] = useState(1);
     const [metric, setMetric] = useState<MetricName>('average');
     const [selectedChart, setChart] = useState<string>('first');
@@ -93,9 +92,10 @@ export function App() {
             });
     }, []);
 
-    useEffect(() => {
-        if (!Object.keys(dataset).length || !selectedStation) return;
-        setFiltered(dataset[selectedStation].temps.filter((d) => d.month === month));
+    const filtered: DayExtended[] = useMemo(() => {
+        if (!Object.keys(dataset).length || !selectedStation)
+            return [];
+        return dataset[selectedStation].temps.filter((d) => d.month === month);
     }, [dataset, month, selectedStation]);
 
     const onMonthChange: MonthSelectorProps['onChange'] = (event) => {
