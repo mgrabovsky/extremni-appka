@@ -75,27 +75,26 @@ export function App() {
     const [month, setMonth] = useState(1);
     const [metric, setMetric] = useState<MetricName>('average');
     const [selectedChart, setChart] = useState<string>('first');
-    const [allStations, setAllStations] = useState<StationList>();
     const [selectedStation, setStation] = useState<string>('B2BTUR01');
 
     useEffect(() => {
         fetch(datasetUrl)
             .then((response) => response.json())
             .then(datasetSchema.parseAsync)
-            .then((dataset) => {
-                setDataset(dataset);
-                setAllStations(
-                    Object.entries(dataset).map(([stationId, { name }]) => ({
-                        id: stationId,
-                        name,
-                    }))
-                );
-            });
+            .then(setDataset);
     }, []);
 
+    const allStations = useMemo<StationList | undefined>(
+        () =>
+            Object.entries(dataset).map(([stationId, { name }]) => ({
+                id: stationId,
+                name,
+            })),
+        [dataset]
+    );
+
     const filtered: DayExtended[] = useMemo(() => {
-        if (!Object.keys(dataset).length || !selectedStation)
-            return [];
+        if (!Object.keys(dataset).length || !selectedStation) return [];
         return dataset[selectedStation].temps.filter((d) => d.month === month);
     }, [dataset, month, selectedStation]);
 
