@@ -81,6 +81,13 @@ export interface FirstChartProps {
     width: number;
 }
 
+const colourScale = d3
+    .scaleThreshold<number, string>()
+    // .range(['#ddd', 'tomato'])
+    // .domain([2019]),
+    .range(['#dbeff9', '#b3d8e3', '#98bdcd', '#89a1b8', '#8283a3', '#7f648f', '#7d417b'])
+    .domain([1971, 1981, 1991, 2001, 2011, 2021]);
+
 export function FirstChart(props: FirstChartProps) {
     const { data: temps, height, margin, metricField, width } = props;
     const xAxisEl = useRef<SVGGElement>(null);
@@ -96,24 +103,6 @@ export function FirstChart(props: FirstChartProps) {
         const axis = d3.axisLeft(scale).tickFormat((d) => `${d} °C`);
         return [scale, axis];
     }, [height, margin]);
-    const colourScale = useMemo(
-        () =>
-            d3
-                .scaleThreshold<number, string>()
-                // .range(['#ddd', 'tomato'])
-                // .domain([2019]),
-                .range([
-                    '#dbeff9',
-                    '#b3d8e3',
-                    '#98bdcd',
-                    '#89a1b8',
-                    '#8283a3',
-                    '#7f648f',
-                    '#7d417b',
-                ])
-                .domain([1971, 1981, 1991, 2001, 2011, 2021]),
-        []
-    );
 
     if (temps) {
         // The result of `d3.extent()` will always be total because `temps` is required
@@ -145,7 +134,7 @@ export function FirstChart(props: FirstChartProps) {
                 y,
                 width: 20,
             };
-        })
+        });
     }, [colourScale, metricField, temps, xScale, yScale]);
 
     useEffect(() => {
