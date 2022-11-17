@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import * as d3 from 'd3';
 
-import { DayExtended } from '../../Schema';
+import { DayExtended } from '../../schema';
 
 interface BarSpec {
     fill: string;
@@ -135,12 +135,12 @@ export function FirstChart(props: FirstChartProps) {
                 width: 20,
             };
         });
-    }, [colourScale, metricField, temps, xScale, yScale]);
+    }, [metricField, temps, xScale, yScale]);
 
     useEffect(() => {
         if (xAxisEl.current) d3.select(xAxisEl.current).call(xAxis);
         if (yAxisEl.current) d3.select(yAxisEl.current).call(yAxis);
-    }, [colourScale, metricField, temps, xAxis, xScale, yAxis, yScale]);
+    }, [metricField, temps, xAxis, xScale, yAxis, yScale]);
 
     return (
         <svg height={height} width={width} viewBox={`0 0 ${width} ${height}`}>

@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { FirstChart } from './components/charts/FirstChart';
-import { SingleDayChart } from './components/charts/SingleDayChart';
-import { Dataset, datasetSchema, DayExtended } from './Schema';
-import { MonthSelector, MonthSelectorProps } from './components/MonthSelector';
-import { StationList, StationSelector } from './components/StationSelector';
+import { FirstChart } from './charts/FirstChart';
+import { SingleDayChart } from './charts/SingleDayChart';
+import { Dataset, datasetSchema, DayExtended } from '../schema';
+import { MonthSelector, MonthSelectorProps } from './MonthSelector';
+import { StationList, StationSelector } from './StationSelector';
 import './App.css';
+import datasetUrl from '../data/dataset.json?url';
 
 const chartWidth = 800;
 const chartHeight = 700;
@@ -78,7 +79,7 @@ export function App() {
     const [selectedStation, setStation] = useState<string>('B2BTUR01');
 
     useEffect(() => {
-        fetch(`${process.env.PUBLIC_URL}/dataset.json`)
+        fetch(datasetUrl)
             .then((response) => response.json())
             .then(datasetSchema.parseAsync)
             .then((dataset) => {

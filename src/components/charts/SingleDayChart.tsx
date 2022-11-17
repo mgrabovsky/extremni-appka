@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import * as d3 from 'd3';
 
-import { DayExtended } from '../../Schema';
+import { DayExtended } from '../../schema';
 
 const HIGHLIGHT_FROM_YEAR = 2019;
 
