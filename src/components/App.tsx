@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { FirstChart } from './charts/FirstChart';
-import { SingleDayChart } from './charts/SingleDayChart';
-import { Dataset, datasetSchema, DayExtended } from '../schema';
-import { MonthSelector, MonthSelectorProps } from './MonthSelector';
-import { StationList, StationSelector } from './StationSelector';
 import './App.css';
 import datasetUrl from '../data/dataset.json?url';
+import { FirstChart } from './charts/FirstChart';
+import { SingleDayChart } from './charts/SingleDayChart';
+import { DateBrush, DateBrushProps } from './DateBrush';
+import { StationList, StationSelector } from './StationSelector';
+import { Dataset, datasetSchema, DayExtended } from '../schema';
 
 const chartWidth = 800;
 const chartHeight = 700;
@@ -70,9 +70,27 @@ function ChartSelector(props: ChartSelectorProps) {
     );
 }
 
+type DateRange = [Date, Date];
+
+// FIXME: This doesn't seem to work correctly for sub-month ranges.
+function inRangeInclusive(dateRange: DateRange) {
+    const [date0, date1] = dateRange;
+    const day0 = date0.getDate();
+    const day1 = date1.getDate();
+    const month0 = 1 + date0.getMonth();
+    const month1 = 1 + date1.getMonth();
+    return ({ day, month }: DayExtended) =>
+        (month0 < month && month < month1) ||
+        (month === month0 && day0 <= day) ||
+        (month === month1 && day <= day1);
+}
+
 export function App() {
     const [dataset, setDataset] = useState<Dataset>({});
-    const [month, setMonth] = useState(1);
+    const [dateRange, setDateRange] = useState<DateRange>([
+        new Date(2000, 5, 1),
+        new Date(2000, 6, 31),
+    ]);
     const [metric, setMetric] = useState<MetricName>('average');
     const [selectedChart, setChart] = useState<string>('first');
     const [selectedStation, setStation] = useState<string>('B2BTUR01');
@@ -95,16 +113,24 @@ export function App() {
 
     const filtered: DayExtended[] = useMemo(() => {
         if (!Object.keys(dataset).length || !selectedStation) return [];
-        return dataset[selectedStation].temps.filter((d) => d.month === month);
-    }, [dataset, month, selectedStation]);
+        return dataset[selectedStation].temps.filter(inRangeInclusive(dateRange));
+    }, [dataset, dateRange, selectedStation]);
 
-    const onMonthChange: MonthSelectorProps['onChange'] = (event) => {
-        setMonth(Number(event.target.value));
-    };
+    // const onMonthChange: MonthSelectorProps['onChange'] = (event) => {
+    //     setMonth(Number(event.target.value));
+    // };
 
     const onMetricChange: MetricSelectorProps['onChange'] = (event) => {
         setMetric(event.target.value as MetricName);
     };
+
+    const onDateRangeChange: DateBrushProps['onChange'] = useMemo(
+        () =>
+            ([x0, x1]) => {
+                setDateRange([x0, x1]);
+            },
+        []
+    );
 
     return (
         <div className="App">
@@ -128,7 +154,7 @@ export function App() {
             <p>
                 Showing temperature{' '}
                 <MetricSelector metric={metric} onChange={onMetricChange} /> for{' '}
-                <MonthSelector month={month} onChange={onMonthChange} />
+                {/* <MonthSelector month={month} onChange={onMonthChange} /> */}
             </p>
 
             {selectedChart === 'first' &&
@@ -151,6 +177,8 @@ export function App() {
                         width={chartWidth}
                     />
                 )) || <p>No data.</p>)}
+
+            <DateBrush height={40} onChange={onDateRangeChange} width={chartWidth} />
 
             <p>
                 (Weather data from{' '}

@@ -14,6 +14,11 @@ interface BarSpec {
     width: number;
 }
 
+const colourScale = d3
+    .scaleThreshold<number, string>()
+    .range(['#d7d7d7', 'crimson'])
+    .domain([HIGHLIGHT_FROM_YEAR]);
+
 export interface SingleDayChartProps {
     data: DayExtended[];
     height: number;
@@ -33,7 +38,8 @@ export function SingleDayChart(props: SingleDayChartProps) {
     const yAxisEl = useRef<SVGGElement>(null);
 
     const [xScale, xAxis] = useMemo(() => {
-        const scale = d3.scaleLinear().range([margin.left + 20, width - margin.right]);
+        const range = [margin.left + 20, width - margin.right];
+        const scale = d3.scaleBand<Date>().rangeRound(range).paddingInner(0.1);
         const axis = d3.axisBottom(scale);
         return [scale, axis];
     }, [margin, width]);
@@ -42,16 +48,8 @@ export function SingleDayChart(props: SingleDayChartProps) {
         const axis = d3.axisLeft(scale).tickFormat((d) => `${d} °C`);
         return [scale, axis];
     }, [height, margin]);
-    const colourScale = useMemo(
-        () =>
-            d3
-                .scaleThreshold<number, string>()
-                .range(['#d7d7d7', 'crimson'])
-                .domain([HIGHLIGHT_FROM_YEAR]),
-        []
-    );
 
-    if (temps) {
+    if (temps.length) {
         // The result of `d3.extent()` will always be total because `temps` is required
         // to be nonempty. Ditto for `d3.max()` and `d3.min()` below.
         // const timeDomain = d3.extent(temps, (d) => d.date) as [Date, Date];
@@ -59,35 +57,39 @@ export function SingleDayChart(props: SingleDayChartProps) {
             number,
             number
         ];
-        const maxDay = d3.max(temps, (d) => d.day)!;
+        const dateRange = d3.extent(temps, (d) => new Date(2000, d.month - 1, d.day)) as [
+            Date,
+            Date
+        ];
 
-        xScale.domain([1, maxDay]);
+        xScale.domain(d3.timeDays(dateRange[0], d3.timeDay.offset(dateRange[1])));
         yScale.domain([minTemp - 2, maxTemp + 2]);
     }
 
-    const bars: BarSpec[] | undefined = useMemo(() => {
-        if (!temps) return;
-        return temps.map((d) => {
-            // const fill = 'rgba(0,0,0,.2)';
-            const fill = colourScale(d.year);
-            const title = `${d.date.toLocaleDateString()}: ${d[metricField]} °C`;
-            const x = xScale(d.day - 0.5);
-            const y = yScale(d[metricField]);
-            return {
-                fill,
-                height: d.year >= HIGHLIGHT_FROM_YEAR ? 5 : 3,
-                title,
-                x,
-                y,
-                width: 20,
-            };
-        })
-    }, [colourScale, metricField, temps, xScale, yScale]);
+    const bars = useMemo<BarSpec[]>(
+        () =>
+            temps.map((d) => {
+                // const fill = 'rgba(0,0,0,.2)';
+                const fill = colourScale(d.year);
+                const title = `${d.date.toLocaleDateString()}: ${d[metricField]} °C`;
+                const x = xScale(new Date(2000, d.month - 1, d.day));
+                const y = yScale(d[metricField]);
+                return {
+                    fill,
+                    height: d.year >= HIGHLIGHT_FROM_YEAR ? 5 : 3,
+                    title,
+                    x: x || 0,
+                    y,
+                    width: xScale.bandwidth(),
+                };
+            }),
+        [metricField, temps, xScale, yScale]
+    );
 
     useEffect(() => {
         if (xAxisEl.current) d3.select(xAxisEl.current).call(xAxis);
         if (yAxisEl.current) d3.select(yAxisEl.current).call(yAxis);
-    // }, [colourScale, metricField, temps, xAxis, xScale, yAxis, yScale]);
+        // }, [colourScale, metricField, temps, xAxis, xScale, yAxis, yScale]);
     }, [xAxis, yAxis]);
 
     return (

@@ -94,8 +94,13 @@ export function FirstChart(props: FirstChartProps) {
     const yAxisEl = useRef<SVGGElement>(null);
 
     const [xScale, xAxis] = useMemo(() => {
-        const scale = d3.scaleLinear().range([margin.left + 20, width - margin.right]);
-        const axis = d3.axisBottom(scale);
+        const range = [margin.left + 20, width - margin.right];
+        const scale = d3.scaleBand<Date>().rangeRound(range).paddingInner(0.1);
+        // TODO: This will probably require a parallel `d3.scaleLinear()` to work correctly.
+        const axis = d3
+            .axisBottom(scale)
+            .ticks(d3.timeDay)
+            .tickFormat(d3.timeFormat('%b %d'));
         return [scale, axis];
     }, [margin, width]);
     const [yScale, yAxis] = useMemo(() => {
@@ -104,7 +109,7 @@ export function FirstChart(props: FirstChartProps) {
         return [scale, axis];
     }, [height, margin]);
 
-    if (temps) {
+    if (temps.length) {
         // The result of `d3.extent()` will always be total because `temps` is required
         // to be nonempty. Ditto for `d3.max()` and `d3.min()` below.
         // const timeDomain = d3.extent(temps, (d) => d.date) as [Date, Date];
@@ -112,9 +117,12 @@ export function FirstChart(props: FirstChartProps) {
             number,
             number
         ];
-        const maxDay = d3.max(temps, (d) => d.day)!;
+        const dateRange = d3.extent(temps, (d) => new Date(2000, d.month - 1, d.day)) as [
+            Date,
+            Date
+        ];
 
-        xScale.domain([1, maxDay]);
+        xScale.domain(d3.timeDays(dateRange[0], d3.timeDay.offset(dateRange[1])));
         yScale.domain([minTemp - 2, maxTemp + 2]);
     }
 
@@ -124,15 +132,15 @@ export function FirstChart(props: FirstChartProps) {
             // const fill = 'rgba(0,0,0,.2)';
             const fill = colourScale(d.year);
             const title = `${d.date.toLocaleDateString()}: ${d[metricField]} °C`;
-            const x = xScale(d.day - 0.5);
+            const x = xScale(new Date(2000, d.month - 1, d.day));
             const y = yScale(d[metricField]);
             return {
                 fill,
                 height: 3,
                 title,
-                x,
+                x: x || 0,
                 y,
-                width: 20,
+                width: xScale.bandwidth(),
             };
         });
     }, [metricField, temps, xScale, yScale]);
