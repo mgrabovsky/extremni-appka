@@ -10,7 +10,7 @@
     "d3": "^7.8.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "zod": "^3.21.4"
+    "zod": "^3.22.3"
   },
   "devDependencies": {
     "@types/chroma-js": "^2.1.3",
