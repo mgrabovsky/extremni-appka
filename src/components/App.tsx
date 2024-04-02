@@ -72,17 +72,21 @@ function ChartSelector(props: ChartSelectorProps) {
 
 type DateRange = [Date, Date];
 
-// FIXME: This doesn't seem to work correctly for sub-month ranges.
 function inRangeInclusive(dateRange: DateRange) {
     const [date0, date1] = dateRange;
     const day0 = date0.getDate();
     const day1 = date1.getDate();
     const month0 = 1 + date0.getMonth();
     const month1 = 1 + date1.getMonth();
-    return ({ day, month }: DayExtended) =>
-        (month0 < month && month < month1) ||
-        (month === month0 && day0 <= day) ||
-        (month === month1 && day <= day1);
+    return ({ day, month }: DayExtended) => (
+        month0 === month1
+            ? (month === month0 && day0 <= day && day <= day1)
+            : (
+                (month0 < month && month < month1) ||
+                (month === month0 && day0 <= day) ||
+                (month === month1 && day <= day1)
+            )
+    );
 }
 
 export function App() {
