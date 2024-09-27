@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 19.x]
+        node-version: [18.x, 20.x]
     env:
-      DEPLOYMENT_NODE_VERSION: '18.x'
+      DEPLOYMENT_NODE_VERSION: '20.x'
     steps:
       - name: Check out sources
         uses: actions/checkout@v3
