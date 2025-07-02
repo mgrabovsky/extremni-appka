@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import './App.css';
-import datasetUrl from '../data/dataset.json?url';
 import { FirstChart } from './charts/FirstChart';
 import { SingleDayChart } from './charts/SingleDayChart';
 import { DateBrush, DateBrushProps } from './DateBrush';
 import { StationList, StationSelector } from './StationSelector';
-import { Dataset, datasetSchema, DayExtended } from '../schema';
+import { Dataset, DayExtended } from '../schema';
 
 const chartWidth = 800;
 const chartHeight = 700;
@@ -90,7 +90,6 @@ function inRangeInclusive(dateRange: DateRange) {
 }
 
 export function App() {
-    const [dataset, setDataset] = useState<Dataset>({});
     const [dateRange, setDateRange] = useState<DateRange>([
         new Date(2000, 5, 1),
         new Date(2000, 6, 31),
@@ -99,15 +98,38 @@ export function App() {
     const [selectedChart, setChart] = useState<string>('first');
     const [selectedStation, setStation] = useState<string>('B2BTUR01');
 
-    useEffect(() => {
-        fetch(datasetUrl)
-            .then((response) => response.json())
-            .then(datasetSchema.parseAsync)
-            .then(setDataset);
-    }, []);
+    const {
+        data: dataset,
+        isLoading,
+        error,
+    } = useQuery<Dataset, Error>({
+        queryKey: ['dataset'],
+        queryFn: () =>
+            new Promise<Dataset>((resolve, reject) => {
+                const worker = new Worker(
+                    new URL('../workers/dataWorker.ts', import.meta.url),
+                    { type: 'module' }
+                );
+                worker.onmessage = (e) => {
+                    if (e.data.error) {
+                        reject(new Error(e.data.error));
+                    } else {
+                        resolve(e.data.data);
+                    }
+                    worker.terminate();
+                };
+                worker.onerror = (err) => {
+                    reject(err instanceof Error ? err : new Error(String(err)));
+                    worker.terminate();
+                };
+            }),
+        staleTime: Infinity,
+        gcTime: Infinity,
+    });
 
     const allStations = useMemo<StationList | undefined>(
         () =>
+            dataset &&
             Object.entries(dataset).map(([stationId, { name }]) => ({
                 id: stationId,
                 name,
@@ -116,7 +138,7 @@ export function App() {
     );
 
     const filtered: DayExtended[] = useMemo(() => {
-        if (!Object.keys(dataset).length || !selectedStation) return [];
+        if (!dataset || !selectedStation) return [];
         return dataset[selectedStation].temps.filter(inRangeInclusive(dateRange));
     }, [dataset, dateRange, selectedStation]);
 
@@ -161,26 +183,34 @@ export function App() {
                 {/* <MonthSelector month={month} onChange={onMonthChange} /> */}
             </p>
 
-            {selectedChart === 'first' &&
-                ((dataset && (
-                    <FirstChart
-                        data={filtered}
-                        height={chartHeight}
-                        margin={chartMargins}
-                        metricField={METRICS[metric].field}
-                        width={chartWidth}
-                    />
-                )) || <p>No data.</p>)}
-            {selectedChart === 'single-day' &&
-                ((dataset && (
-                    <SingleDayChart
-                        data={filtered}
-                        height={chartHeight}
-                        margin={chartMargins}
-                        metricField={METRICS[metric].field}
-                        width={chartWidth}
-                    />
-                )) || <p>No data.</p>)}
+            {isLoading ? (
+                <div className="spinner" />
+            ) : error ? (
+                <p style={{ color: 'red' }}>Error: {error.message}</p>
+            ) : (
+                <>
+                    {selectedChart === 'first' &&
+                        ((filtered.length > 0 && (
+                            <FirstChart
+                                data={filtered}
+                                height={chartHeight}
+                                margin={chartMargins}
+                                metricField={METRICS[metric].field}
+                                width={chartWidth}
+                            />
+                        )) || <p>No data.</p>)}
+                    {selectedChart === 'single-day' &&
+                        ((filtered.length > 0 && (
+                            <SingleDayChart
+                                data={filtered}
+                                height={chartHeight}
+                                margin={chartMargins}
+                                metricField={METRICS[metric].field}
+                                width={chartWidth}
+                            />
+                        )) || <p>No data.</p>)}
+                </>
+            )}
 
             <DateBrush height={40} onChange={onDateRangeChange} width={chartWidth} />
 
