@@ -40,7 +40,10 @@ export function SingleDayChart(props: SingleDayChartProps) {
     const [xScale, xAxis] = useMemo(() => {
         const range = [margin.left + 20, width - margin.right];
         const scale = d3.scaleBand<Date>().rangeRound(range).paddingInner(0.1);
-        const axis = d3.axisBottom(scale);
+        const axis = d3
+            .axisBottom(scale)
+            .ticks(width / 80)
+            .tickFormat((d, _i) => d3.timeFormat('%b %d')(d as Date));
         return [scale, axis];
     }, [margin, width]);
     const [yScale, yAxis] = useMemo(() => {
