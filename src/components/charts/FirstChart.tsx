@@ -93,16 +93,16 @@ export function FirstChart(props: FirstChartProps) {
     const xAxisEl = useRef<SVGGElement>(null);
     const yAxisEl = useRef<SVGGElement>(null);
 
-    const [xScale, xAxis] = useMemo(() => {
-        const range = [margin.left + 20, width - margin.right];
+    const [xScale, timeScale, xAxis] = useMemo(() => {
+        const range: [number, number] = [margin.left + 20, width - margin.right];
         const scale = d3.scaleBand<Date>().rangeRound(range).paddingInner(0.1);
-        // TODO: This will probably require a parallel `d3.scaleLinear()` to work correctly.
+        const ts = d3.scaleTime().range(range);
         const axis = d3
-            .axisBottom(scale)
-            .ticks(d3.timeDay)
-            .tickFormat(d3.timeFormat('%b %d'));
-        return [scale, axis];
-    }, [margin, width]);
+            .axisBottom(ts)
+            .ticks(width / 80)
+            .tickFormat((d, _i) => d3.timeFormat('%b %d')(d as Date));
+        return [scale, ts, axis] as const;
+    }, [margin.left, margin.right, width]);
     const [yScale, yAxis] = useMemo(() => {
         const scale = d3.scaleLinear().range([height - margin.bottom, margin.top]);
         const axis = d3.axisLeft(scale).tickFormat((d) => `${d} °C`);
@@ -123,6 +123,7 @@ export function FirstChart(props: FirstChartProps) {
         ];
 
         xScale.domain(d3.timeDays(dateRange[0], d3.timeDay.offset(dateRange[1])));
+        timeScale.domain(dateRange);
         yScale.domain([minTemp - 2, maxTemp + 2]);
     }
 
@@ -146,9 +147,9 @@ export function FirstChart(props: FirstChartProps) {
     }, [metricField, temps, xScale, yScale]);
 
     useEffect(() => {
-        if (xAxisEl.current) d3.select(xAxisEl.current).call(xAxis);
-        if (yAxisEl.current) d3.select(yAxisEl.current).call(yAxis);
-    }, [metricField, temps, xAxis, xScale, yAxis, yScale]);
+        if (xAxisEl.current) d3.select(xAxisEl.current).call(xAxis as any);
+        if (yAxisEl.current) d3.select(yAxisEl.current).call(yAxis as any);
+    }, [metricField, temps, xAxis, yAxis, yScale]);
 
     return (
         <svg height={height} width={width} viewBox={`0 0 ${width} ${height}`}>
