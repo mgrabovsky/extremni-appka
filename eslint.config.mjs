@@ -1,20 +1,29 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
+import globals from "globals";
 import { defineConfig } from "eslint/config";
-import { fixupConfigRules } from "@eslint/compat";
 import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
+import tseslint from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
+import reactPlugin from "@eslint-react/eslint-plugin";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
-
-export default defineConfig([{
-    extends: fixupConfigRules(compat.extends("react-app")),
-}]);
+export default defineConfig([
+  js.configs.recommended,
+  reactPlugin.configs.recommended,
+  {
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      parser: tsParser,
+      globals: {
+        ...globals.browser,
+      },
+    },
+    plugins: {
+      "@typescript-eslint": tseslint,
+    },
+    rules: {
+      ...tseslint.configs.recommended.rules,
+      "@typescript-eslint/no-unused-vars": ["error", {
+        argsIgnorePattern: "^_",
+      }],
+    },
+  },
+]);
