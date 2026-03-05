@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { type ChangeEventHandler, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import './App.css';
@@ -24,7 +24,7 @@ const CHART_IDS = ['first', 'single-day'];
 
 interface MetricSelectorProps {
     metric: MetricName;
-    onChange: React.ChangeEventHandler<HTMLSelectElement>;
+    onChange: ChangeEventHandler<HTMLSelectElement>;
 }
 
 function MetricSelector(props: MetricSelectorProps) {
@@ -48,7 +48,7 @@ function MetricSelector(props: MetricSelectorProps) {
 
 interface ChartSelectorProps {
     chart: string;
-    onChange: React.ChangeEventHandler<HTMLSelectElement>;
+    onChange: ChangeEventHandler<HTMLSelectElement>;
 }
 
 function ChartSelector(props: ChartSelectorProps) {

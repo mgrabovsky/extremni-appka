@@ -25,6 +25,6 @@ export const stationSchema = z.object({
 
 export type Station = z.infer<typeof stationSchema>;
 
-export const datasetSchema = z.record(stationSchema);
+export const datasetSchema = z.record(z.string(), stationSchema);
 
 export type Dataset = z.infer<typeof datasetSchema>;

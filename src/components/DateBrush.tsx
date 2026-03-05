@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 export interface DateBrushProps {
     height: number;
-    onChange?(selection: [Date, Date]): any;
+    onChange?(selection: [Date, Date]): void;
     width: number;
 }
 
@@ -69,10 +69,14 @@ export function DateBrush(props: DateBrushProps) {
         [height, x]
     );
 
-    function onBrushEnd(event: any) {
+    function onBrushEnd(event: d3.D3BrushEvent<unknown>) {
         const { selection } = event;
         if (!event.sourceEvent || !selection) return;
-        const [x0, x1] = selection.map((d: any) => DAILY_INTERVAL!.round(x.invert(d)));
+        // NOTE: We can cast here as we know the brush is 1D.
+        const [x0, x1] = (
+            (selection as [number, number])
+                .map((d: number) => DAILY_INTERVAL!.round(x.invert(d)))
+        );
         // TODO: Limit size to about 3 months. The trick is to call `brush.move()`
         // with the clamped range.
         d3.select<SVGGElement, Date>(brushRef.current!)

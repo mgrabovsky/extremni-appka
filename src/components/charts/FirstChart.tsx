@@ -20,7 +20,7 @@ interface LegendProps {
 
 function Legend(props: LegendProps) {
     const { height, scale, width } = props;
-    const axisElement = useRef<SVGGElement>(null);
+    const axisRef = useRef<SVGGElement>(null);
     const x = useMemo(
         () =>
             d3
@@ -31,13 +31,13 @@ function Legend(props: LegendProps) {
     );
 
     useEffect(() => {
-        if (!axisElement.current) return;
+        if (!axisRef.current) return;
         const thresholds = scale.domain();
-        const thresholdFormat = (d: number, _i: number) => d.toString();
+        const thresholdFormat = (d: number) => d.toString();
         const tickValues = d3.range(thresholds.length);
-        const tickFormat = (i: d3.NumberValue, _j: number) =>
-            thresholdFormat(thresholds[i.valueOf()], i.valueOf());
-        d3.select(axisElement.current)
+        const tickFormat = (i: d3.NumberValue) =>
+            thresholdFormat(thresholds[i.valueOf()]);
+        d3.select(axisRef.current)
             .call(
                 d3
                     .axisBottom(x)
@@ -58,12 +58,13 @@ function Legend(props: LegendProps) {
                 <rect
                     fill={fill}
                     height={height}
+                    // eslint-disable-next-line @eslint-react/no-array-index-key
                     key={i}
                     width={x(i) - x(i - 1)}
                     x={x(i - 1)}
                 />
             ))}
-            <g ref={axisElement} transform={`translate(0, ${height})`} />
+            <g ref={axisRef} transform={`translate(0, ${height})`} />
         </g>
     );
 }
@@ -90,8 +91,8 @@ const colourScale = d3
 
 export function FirstChart(props: FirstChartProps) {
     const { data: temps, height, margin, metricField, width } = props;
-    const xAxisEl = useRef<SVGGElement>(null);
-    const yAxisEl = useRef<SVGGElement>(null);
+    const xAxisRef = useRef<SVGGElement>(null);
+    const yAxisRef = useRef<SVGGElement>(null);
 
     const [xScale, timeScale, xAxis] = useMemo(() => {
         const range: [number, number] = [margin.left + 20, width - margin.right];
@@ -147,18 +148,19 @@ export function FirstChart(props: FirstChartProps) {
     }, [metricField, temps, xScale, yScale]);
 
     useEffect(() => {
-        if (xAxisEl.current) d3.select(xAxisEl.current).call(xAxis as any);
-        if (yAxisEl.current) d3.select(yAxisEl.current).call(yAxis as any);
+        if (xAxisRef.current) d3.select(xAxisRef.current).call(xAxis);
+        if (yAxisRef.current) d3.select(yAxisRef.current).call(yAxis);
     }, [metricField, temps, xAxis, yAxis, yScale]);
 
     return (
         <svg height={height} width={width} viewBox={`0 0 ${width} ${height}`}>
             <g>
-                <g ref={xAxisEl} transform={`translate(0, ${height - margin.bottom})`} />
-                <g ref={yAxisEl} transform={`translate(${margin.left}, 0)`} />
+                <g ref={xAxisRef} transform={`translate(0, ${height - margin.bottom})`} />
+                <g ref={yAxisRef} transform={`translate(${margin.left}, 0)`} />
             </g>
             {bars?.map(({ title, ...bar }, i) => (
-                <rect {...bar} key={i}>
+                // eslint-disable-next-line @eslint-react/no-array-index-key
+                <rect key={i} {...bar}>
                     <title>{title}</title>
                 </rect>
             ))}

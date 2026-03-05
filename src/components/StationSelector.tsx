@@ -1,8 +1,10 @@
+import { type ChangeEventHandler } from 'react';
+
 export type StationList = { id: string; name: string }[];
 
 export interface StationSelectorProps {
     allStations?: StationList;
-    onChange: React.ChangeEventHandler<HTMLSelectElement>;
+    onChange: ChangeEventHandler<HTMLSelectElement>;
     station: string;
 }
 

@@ -34,8 +34,8 @@ export interface SingleDayChartProps {
 
 export function SingleDayChart(props: SingleDayChartProps) {
     const { data: temps, height, margin, metricField, width } = props;
-    const xAxisEl = useRef<SVGGElement>(null);
-    const yAxisEl = useRef<SVGGElement>(null);
+    const xAxixRef = useRef<SVGGElement>(null);
+    const yAxisRef = useRef<SVGGElement>(null);
 
     const [xScale, xAxis] = useMemo(() => {
         const range = [margin.left + 20, width - margin.right];
@@ -90,8 +90,8 @@ export function SingleDayChart(props: SingleDayChartProps) {
     );
 
     useEffect(() => {
-        if (xAxisEl.current) d3.select(xAxisEl.current).call(xAxis);
-        if (yAxisEl.current) d3.select(yAxisEl.current).call(yAxis);
+        if (xAxixRef.current) d3.select(xAxixRef.current).call(xAxis);
+        if (yAxisRef.current) d3.select(yAxisRef.current).call(yAxis);
         // }, [colourScale, metricField, temps, xAxis, xScale, yAxis, yScale]);
     }, [xAxis, yAxis]);
 
@@ -103,13 +103,14 @@ export function SingleDayChart(props: SingleDayChartProps) {
             <svg height={height} width={width} viewBox={`0 0 ${width} ${height}`}>
                 <g>
                     <g
-                        ref={xAxisEl}
+                        ref={xAxixRef}
                         transform={`translate(0, ${height - margin.bottom})`}
                     />
-                    <g ref={yAxisEl} transform={`translate(${margin.left}, 0)`} />
+                    <g ref={yAxisRef} transform={`translate(${margin.left}, 0)`} />
                 </g>
                 {bars?.map(({ title, ...bar }, i) => (
-                    <rect {...bar} key={i}>
+                    // eslint-disable-next-line @eslint-react/no-array-index-key
+                    <rect key={i} {...bar}>
                         <title>{title}</title>
                     </rect>
                 ))}
