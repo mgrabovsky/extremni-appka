@@ -23,10 +23,10 @@ jobs:
       DEPLOYMENT_NODE_VERSION: '22.x'
     steps:
       - name: Check out sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
@@ -45,7 +45,7 @@ jobs:
         if:
           github.ref_name == 'main' &&
           matrix.node-version == env.DEPLOYMENT_NODE_VERSION
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: dist/
 
