@@ -90,13 +90,13 @@ function inRangeInclusive(dateRange: DateRange) {
 }
 
 export function App() {
-    const [dateRange, setDateRange] = useState<DateRange>([
+    const [dateRange, setDateRange] = useState<DateRange>(() => [
         new Date(2000, 5, 1),
         new Date(2000, 6, 31),
     ]);
     const [metric, setMetric] = useState<MetricName>('average');
-    const [selectedChart, setChart] = useState<string>('first');
-    const [selectedStation, setStation] = useState<string>('B2BTUR01');
+    const [selectedChart, setSelectedChart] = useState<string>('first');
+    const [selectedStation, setSelectedStation] = useState<string>('B2BTUR01');
 
     const {
         data: dataset,
@@ -164,7 +164,7 @@ export function App() {
                 1961–2021 Temperatures for{' '}
                 <StationSelector
                     allStations={allStations}
-                    onChange={({ target }) => setStation(target.value)}
+                    onChange={({ target }) => setSelectedStation(target.value)}
                     station={selectedStation}
                 />
             </h1>
@@ -173,7 +173,7 @@ export function App() {
                 Chart type:{' '}
                 <ChartSelector
                     chart={selectedChart}
-                    onChange={({ target }) => setChart(target.value)}
+                    onChange={({ target }) => setSelectedChart(target.value)}
                 />
             </p>
 

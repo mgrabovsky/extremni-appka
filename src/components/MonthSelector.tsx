@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
+import { type ChangeEventHandler, useMemo } from 'react';
 
 export interface MonthSelectorProps {
     month: number;
-    onChange: React.ChangeEventHandler<HTMLSelectElement>;
+    onChange: ChangeEventHandler<HTMLSelectElement>;
 }
 
 export function MonthSelector(props: MonthSelectorProps) {
@@ -22,7 +22,7 @@ export function MonthSelector(props: MonthSelectorProps) {
     return (
         <select className="customSelector" name="month" onChange={onChange} value={month}>
             {monthNames.map((name, i) => (
-                <option key={i} value={1 + i}>
+                <option key={name} value={1 + i}>
                     {name}
                 </option>
             ))}
