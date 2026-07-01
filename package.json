@@ -6,28 +6,28 @@
   "homepage": "https://mgrabovsky.net/extremni-appka",
   "private": true,
   "dependencies": {
-    "@tanstack/react-query": "^5.81.5",
-    "chroma-js": "^3.1.2",
+    "@tanstack/react-query": "^5.101.2",
+    "chroma-js": "^3.2.0",
     "d3": "^7.9.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "zod": "^4.3.6"
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint-react/eslint-plugin": "^2.13.0",
     "@eslint/js": "^10.0.1",
     "@types/chroma-js": "^3.1.1",
     "@types/d3": "^7.4.3",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.57.0",
     "@typescript-eslint/parser": "^8.57.0",
     "@vitejs/plugin-react": "^6.0.0",
-    "eslint": "^10.0.3",
-    "globals": "^17.4.0",
+    "eslint": "^10.6.0",
+    "globals": "^17.7.0",
     "typescript": "^5.8.3",
-    "vite": "^8.0.5",
-    "vite-plugin-eslint2": "^5.0.5"
+    "vite": "^8.1.2",
+    "vite-plugin-eslint2": "^5.3.0"
   },
   "scripts": {
     "dev": "vite",
