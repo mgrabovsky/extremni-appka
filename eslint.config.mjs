@@ -1,15 +1,15 @@
-import globals from "globals";
-import { defineConfig } from "eslint/config";
-import js from "@eslint/js";
-import tseslint from "@typescript-eslint/eslint-plugin";
-import tsParser from "@typescript-eslint/parser";
-import reactPlugin from "@eslint-react/eslint-plugin";
+import globals from 'globals';
+import { defineConfig } from 'eslint/config';
+import js from '@eslint/js';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
+import reactPlugin from '@eslint-react/eslint-plugin';
 
 export default defineConfig([
   js.configs.recommended,
   reactPlugin.configs.recommended,
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parser: tsParser,
       globals: {
@@ -17,12 +17,12 @@ export default defineConfig([
       },
     },
     plugins: {
-      "@typescript-eslint": tseslint,
+      '@typescript-eslint': tseslint,
     },
     rules: {
       ...tseslint.configs.recommended.rules,
-      "@typescript-eslint/no-unused-vars": ["error", {
-        argsIgnorePattern: "^_",
+      '@typescript-eslint/no-unused-vars': ['error', {
+        argsIgnorePattern: '^_',
       }],
     },
   },
